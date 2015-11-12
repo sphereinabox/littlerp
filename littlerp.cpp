@@ -85,7 +85,9 @@ int main(int argc, char **argv){
   SliceMngr *sm;
   l = new lcd(1);
   dm = new dirmngr();
-  slfile = lrc_menu(l,dm);
+  //slfile = lrc_menu(l,dm);
+  // NICK HACK: bypass LCD menu
+  slfile = dm->getEntry(0);
 
   if(slfile.valid == 1){
     l->setColor(2);
@@ -93,7 +95,7 @@ int main(int argc, char **argv){
   }else{
     exit(1);
   }
-  strcpy(slfile.path, "/models/huntress_final.slice/huntress_final.gcode");
+  strcpy(slfile.path, "/models/NICK_huntress_final.slice/huntress_final.gcode");
   strcpybase(base,slfile.path, '.');
   fp = fopen(slfile.path, "r");
 
