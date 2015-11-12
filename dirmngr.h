@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <unistd.h>
 #include <string.h>
 #include <vector>
 
@@ -22,6 +23,7 @@ class dirmngr{
   dirmngr();
   int entries();
   dentry getEntry(int i);
+  dentry getEntryForFile(const char *p);
  private:
   int checkFile(const char *p);
   void validate(dentry *d);

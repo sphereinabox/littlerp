@@ -77,31 +77,51 @@ int main(int argc, char **argv){
   char base[255];
   char wrcmd[255];
   char *tmp;
-  lcd *l;
-  dirmngr *dm;
   dentry slfile;
+  dirmngr *dm;
+#define ENABLE_LCD 0
+#if ENABLE_LCD
+  lcd *l;
+#endif
   struct termios orig;
   struct termios raw;
   SliceMngr *sm;
-  l = new lcd(1);
+
+  if (argc < 3) {
+    printf("usage: littlerp GCODE_FILENAME TTY_FILENAME [TTY_BAUD]\n");
+    return 0;
+  }
+  char *arggcode = argv[1];
+  char *argtty = argv[2];
+  char *argbaud = "9600";
+  if (argc >= 4) {
+    argbaud = argv[3];
+  }
+  // TODO: validate and use the baud arguments
+
   dm = new dirmngr();
-  //slfile = lrc_menu(l,dm);
-  // NICK HACK: bypass LCD menu
-  slfile = dm->getEntry(0);
+#if ENABLE_LCD
+  l = new lcd(1);
+  slfile = lrc_menu(l,dm);
+#else
+  slfile = dm->getEntryForFile( arggcode);
+#endif
 
   if(slfile.valid == 1){
+#if ENABLE_LCD
     l->setColor(2);
+#endif
     printf("gcode: %s\n", slfile.path);
   }else{
+    printf("invalid gcode filename: %s\n", slfile.path);
     exit(1);
   }
-  strcpy(slfile.path, "/models/NICK_huntress_final.slice/huntress_final.gcode");
   strcpybase(base,slfile.path, '.');
   fp = fopen(slfile.path, "r");
 
-  mt = open(argv[1], O_RDWR);
+  mt = open(argtty, O_RDWR);
   if(!isatty(mt)){
-    printf("not a tty\n");
+    printf("not a tty or no file: %s\n", argtty);
     return -1;
   }
   if(tcgetattr(mt, &orig) < 0){

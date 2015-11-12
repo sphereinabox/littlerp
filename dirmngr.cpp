@@ -45,6 +45,21 @@ dentry dirmngr::getEntry(int i){
   return dl[i];
 }
 
+dentry dirmngr::getEntryForFile(const char *p){
+  dentry d;
+  d.path[0] = '\0';
+  strcpy(d.name, "[command-line]");
+  d.valid = 0;
+  strcpy(d.path, p);
+
+  // Test that file is readable:
+  if (access(p, R_OK) != -1) {
+    d.valid = (checkFile(p) == 1) ? 1 : 0;
+  }
+
+  return d;
+}
+
 dirmngr::dirmngr(){
   DIR *dp;
   unsigned int c;
